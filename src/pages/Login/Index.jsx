@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
 import api, { AUTH_USER } from '../../services/api'
 import { setToken } from '../../services/auth';
 import { useNavigate } from 'react-router-dom';
-const Login = (props) => {
+const Index = () => {
 
     let navigate = useNavigate();
 
@@ -103,4 +102,4 @@ const Login = (props) => {
 
 }
 
-export default Login;
+export default Index;
