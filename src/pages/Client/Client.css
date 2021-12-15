@@ -1,0 +1,19 @@
+caption{
+    caption-side: top!important;
+    text-align: center;
+}
+table input{
+    width: 100%;
+}
+
+select{
+    text-transform: capitalize;
+    
+}
+select option {
+    text-transform: uppercase;
+}
+
+.client.content.container{
+    margin-bottom: 100px;
+}

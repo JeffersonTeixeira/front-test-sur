@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import api, { AUTH_USER } from '../../services/api'
-import { setToken } from '../../services/auth';
+import { setToken, setUserName, setRoles } from '../../services/auth';
 import { useNavigate } from 'react-router-dom';
 const Index = () => {
 
@@ -42,13 +42,13 @@ const Index = () => {
             password: login.password
         }
 
-
-
         api.post(AUTH_USER, payload)
             .then(response => {
                 if (response.status === 200) {
                     changeMessage('Login efetuado. Redirecionando...', 'success');
                     setToken(response.data.token);
+                    setUserName(response.data.usuario);
+                    setRoles(response.data.roles);                    
                     navigate("/", { replace: true });
                 } else {
                     changeMessage('Algo deu errado, tente novamente', 'danger');
