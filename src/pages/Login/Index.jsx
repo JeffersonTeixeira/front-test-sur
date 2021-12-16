@@ -47,8 +47,8 @@ const Index = () => {
                 if (response.status === 200) {
                     changeMessage('Login efetuado. Redirecionando...', 'success');
                     setToken(response.data.token);
-                    setUserName(response.data.usuario);
-                    setRoles(response.data.roles);                    
+                    setUserName(response.data.user);
+                    setRoles(response.data.roles);
                     navigate("/", { replace: true });
                 } else {
                     changeMessage('Algo deu errado, tente novamente', 'danger');
@@ -64,8 +64,9 @@ const Index = () => {
             <div className="card col-12 col-lg-4 login-card mt-2 hv-center">
                 <form className="form login">
                     <div className="form-group text-left">
-                        <label for="username">Usuário</label>
+                        <label htmlFor="username">Usuário</label>
                         <input type="text"
+                            className="form-control"
                             id="username"
                             placeholder="Usuário"
                             value={login.username}
@@ -73,15 +74,15 @@ const Index = () => {
                         />
                     </div>
                     <div className="form-group text-left">
-                        <label for="password">Senha</label>
+                        <label htmlFor="password">Senha</label>
                         <input type="password"
+                        className="form-control"
                             id="password"
                             placeholder="Senha"
                             value={login.senha}
                             onChange={handleChange}
                         />
                     </div>
-                    {/*    */}
 
                     <div className={'alert mt-2 alert-' + message.type} style={{ display: message.message ? 'block' : 'none' }} role="alert">
                         {message.message}
@@ -91,11 +92,7 @@ const Index = () => {
                         className="btn btn-primary"
                         onClick={loginHandle}
                     >Login</button>
-                </form>
-
-                {/* @TODO REMOVE ME */}
-                <p>{login.username}</p>
-                <p>{login.password}</p>
+                </form>               
             </div>
         </div>
     );
