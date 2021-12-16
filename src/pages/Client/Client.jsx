@@ -6,9 +6,12 @@ import './Client.css';
 import PhoneInput from '../../components/Mask/PhoneInput';
 import Swal from 'sweetalert2'
 import Header from '../../components/Header/Index';
+import { getRoles } from '../../services/auth'
+import CepInput from '../../components/CepInput';
 
 const Client = () => {
     let params = useParams();
+    let isReadOnly = getRoles().indexOf("ADMIN") == -1;
 
     const emptyPhone = { id: "", number: "", type: "" }
     const emptyClient = {
@@ -26,6 +29,7 @@ const Client = () => {
 
     const [emails, setEmails] = useState([""]);
     const [phones, setPhones] = useState([emptyPhone]);
+
 
     useEffect(() => {
         fetchClient();
@@ -53,25 +57,31 @@ const Client = () => {
 
 
     const updateCurrentCli = (prop, value) => {
-        setCurrentCli(prev => ({
-            ...prev,
-            [prop]: value
-        }));
+        if (!isReadOnly) {
+            setCurrentCli(prev => ({
+                ...prev,
+                [prop]: value
+            }));
+        }
     }
 
 
     const setCurrentCliAddress = (prop, value) => {
-        const a = { ...currentCli }
-        a.address[prop] = value;
-        setCurrentCli(a);
+        if (!isReadOnly) {
+            const a = { ...currentCli }
+            a.address[prop] = value;
+            setCurrentCli(a);
+        }
     }
 
     const updatePhones = (index, prop, value) => {
-        let old = [...phones];
-        old[index][prop] = value;
-        setPhones(old);
-        if (old[index] == currentCli.phone) { //if radio checked, also update value in Current client            
-            updateCurrentCli('phone', old[index]);
+        if (!isReadOnly) {
+            let old = [...phones];
+            old[index][prop] = value;
+            setPhones(old);
+            if (old[index] == currentCli.phone) { //if radio checked, also update value in Current client            
+                updateCurrentCli('phone', old[index]);
+            }
         }
     }
 
@@ -107,9 +117,13 @@ const Client = () => {
             <tr key={index}>
                 <td>
                     <label className="sr-only" htmlFor={'email-' + (index)} >E-mail</label>
-                    <input type="email" className="form-control" value={email}
+                    <input type="email" required className="form-control" value={email}
                         id={'email-' + (index)}
                         onChange={e => {
+                            if (isReadOnly) {
+                                return;
+                            }
+
                             let old = [...emails];
                             old[index] = e.target.value;
                             setEmails(old);
@@ -119,7 +133,7 @@ const Client = () => {
                         }} />
                 </td>
                 <td className="text-center">
-                    <input name="email-principal" type="radio" id={'email' + (index)}
+                    <input name="email-principal" type="radio" required id={'email' + (index)}
                         checked={email == currentCli.email}
                         value={email}
                         onChange={e => updateCurrentCli('email', email)}
@@ -128,7 +142,7 @@ const Client = () => {
                 </td>
                 <td className="text-center">
                     <button type="button" className="btn btn-outline-danger"
-                        onClick={() => { if (emails.length > 1) setEmails(emails.filter((item, i) => i != index)) }}>
+                        onClick={() => { if (emails.length > 1 && !isReadOnly) setEmails(emails.filter((item, i) => i != index)) }}>
                         <i className="bi bi-trash"><span className="sr-only">Remover</span></i>
                     </button>
                 </td>
@@ -142,12 +156,12 @@ const Client = () => {
             <tr key={index}>
                 <td>
                     <input type="hidden" readOnly value={phone.id} />
-                    <PhoneInput type="tel" className="form-control" value={phone.number}
+                    <PhoneInput type="tel" required className="form-control" value={phone.number}
                         onChange={e => { updatePhones(index, 'number', e.target.value) }}
                     />
                 </td>
                 <td className="text-center">
-                    <select className="form-control" value={phone.type || ""}
+                    <select className="form-control" required value={phone.type || ""}
                         onChange={
                             e => { updatePhones(index, 'type', e.target.value) }
                         }>
@@ -158,7 +172,7 @@ const Client = () => {
                     </select>
                 </td>
                 <td className="text-center">
-                    <input name="telefone-principal" type="radio" id={'phone' + (index)}
+                    <input name="telefone-principal" required type="radio" id={'phone' + (index)}
                         checked={phone == currentCli.phone}
                         value={phone}
                         onChange={e => updateCurrentCli('phone', phone)}
@@ -167,7 +181,7 @@ const Client = () => {
                 </td>
                 <td className="text-center">
                     <button type="button" className="btn btn-outline-danger"
-                        onClick={() => { if (phones.length > 1) setPhones(phones.filter(item => item != phone)) }}>
+                        onClick={() => { if (phones.length > 1 && !isReadOnly) setPhones(phones.filter(item => item != phone)) }}>
                         <i className="bi bi-trash "><span className="sr-only">Remover</span></i>
                     </button>
                 </td>
@@ -178,18 +192,27 @@ const Client = () => {
     return (
         <>
             <Header title="Cliente" />
+            {
+                isReadOnly ?
+                    <div className="alert alert-warning text-center">
+                        <span>Você só possui permissão de visualização, não é possível alterar os dados.</span>
+                    </div>
+                    : ""
+            }
+
             <div className="client content container">
                 <form onSubmit={e => requestSaveClient(e)}>
                     <div className="form-row">
                         <input type="hidden" id="id" readOnly value={currentCli.id} />
                         <div className="form-group col-md-10">
                             <label htmlFor="name">Nome</label>
-                            <input type="text" className="form-control" id="name" placeholder="Nome" value={currentCli.name}
+                            <input type="text" className="form-control" id="name" placeholder="Nome" required minLength="3" maxLength="100"
+                                value={currentCli.name}
                                 onChange={e => { updateCurrentCli('name', e.target.value) }} />
                         </div>
                         <div className="form-group col-md-2">
                             <label htmlFor="document">CPF</label>
-                            <InputMask mask='999.999.999-99' type="tel" className="form-control" id="document" placeholder="CPF" value={currentCli.document}
+                            <InputMask mask='999.999.999-99' required type="tel" className="form-control" id="document" placeholder="CPF" value={currentCli.document}
                                 onChange={e => { updateCurrentCli('document', e.target.value) }} />
                         </div>
                     </div>
@@ -197,13 +220,21 @@ const Client = () => {
                         <input type="hidden" id="address.id" readOnly value={currentCli.address.id} />
                         <div className="form-group col-md-2">
                             <label htmlFor="address.cep">CEP</label>
-                            <InputMask mask='99.999-999' type="tel" className="form-control" id="address.cep" placeholder="CEP"
+
+                            <CepInput type="tel"required   className="form-control" id="address.cep" placeholder="CEP"
+                                responsecep={(r) => {
+                                    setCurrentCliAddress('logradouro', r.logradouro);
+                                    setCurrentCliAddress('bairro', r.bairro);
+                                    setCurrentCliAddress('uf', r.uf);
+                                    setCurrentCliAddress('cidade', r.localidade);
+                                    setCurrentCliAddress('complemento', r.complemento);
+                                }}
                                 value={currentCli.address.cep}
                                 onChange={e => { setCurrentCliAddress('cep', e.target.value) }} />
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="address.logradouro">Logradouro</label>
-                            <input type="text" className="form-control" id="address.logradouro" placeholder="Logradouro" value={currentCli.address.logradouro}
+                            <input type="text" className="form-control" required id="address.logradouro" placeholder="Logradouro" value={currentCli.address.logradouro}
                                 onChange={e => { setCurrentCliAddress('logradouro', e.target.value) }} />
                         </div>
                         <div className="form-group col-md-4">
@@ -215,17 +246,17 @@ const Client = () => {
                     <div className="form-row">
                         <div className="form-group col-md-5">
                             <label htmlFor="address.bairro">Bairro</label>
-                            <input type="text" className="form-control" id="address.bairro" placeholder="Bairro" value={currentCli.address.bairro}
+                            <input type="text" className="form-control" required id="address.bairro" placeholder="Bairro" value={currentCli.address.bairro}
                                 onChange={e => { setCurrentCliAddress('bairro', e.target.value) }} />
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="address.cidade">Cidade</label>
-                            <input type="text" className="form-control" id="address.cidade" placeholder="Cidade" value={currentCli.address.cidade}
+                            <input type="text" className="form-control" required id="address.cidade" placeholder="Cidade" value={currentCli.address.cidade}
                                 onChange={e => { setCurrentCliAddress('cidade', e.target.value) }} />
                         </div>
                         <div className="form-group col-md-1">
                             <label htmlFor="address.uf">UF</label>
-                            <input type="text" className="form-control" id="address.uf" placeholder="UF" value={currentCli.address.uf}
+                            <input type="text" className="form-control" required id="address.uf" placeholder="UF" value={currentCli.address.uf}
                                 onChange={e => { setCurrentCliAddress('uf', e.target.value) }} />
                         </div>
                     </div>
@@ -248,7 +279,11 @@ const Client = () => {
                                 </tbody>
                             </table>
                             <button type="button" className="btn btn-secondary" onClick={
-                                () => { setEmails(prev => ([...prev, ""])); }
+                                () => {
+                                    if (!isReadOnly) {
+                                        setEmails(prev => ([...prev, ""]));
+                                    }
+                                }
                             }>Adicionar e-mail</button>
 
                         </div>
@@ -270,17 +305,21 @@ const Client = () => {
                                 </tbody>
                             </table>
                             <button type="button" className="btn btn-secondary" onClick={
-                                () => { setPhones(prev => ([...prev, { id: "", number: "", type: "" }])); }
+                                () => {
+                                    if (!isReadOnly) {
+                                        setPhones(prev => ([...prev, emptyPhone]));
+                                    }
+                                }
                             }>Adicionar telefone</button>
                         </div>
                     </div>
                     <nav className="navbar client fixed-bottom navbar-light bg-light">
                         <div className="container justify-content-start">
                             <div className="col-sm-2">
-                                <button type="submit" className="btn btn-block btn-success">Salvar</button>
+                                <button type="submit" className="btn btn-block btn-success" disabled={isReadOnly}>Salvar</button>
                             </div>
                             <div className="col-1">
-                                <button type="button" className="btn btn-sm btn-danger"
+                                <button type="button" className="btn btn-sm btn-danger" disabled={isReadOnly}
                                     onClick={(e) => {
                                         Swal.fire({
                                             title: 'Tem certeza que deseja remover?',
