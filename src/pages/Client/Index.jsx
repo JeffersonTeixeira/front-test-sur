@@ -4,6 +4,7 @@ import PhoneInput from '../../components/Mask/PhoneInput';
 import api, { CLIENT_LIST_URL } from '../../services/api';
 import InputMask from 'react-input-mask';
 import Header from '../../components/Header/Index'
+import './Client.css';
 
 const Index = () => {
 
@@ -64,7 +65,7 @@ const Index = () => {
     const renderTableClients = () => {
         return (
             <>
-                <table className="table table-striped table-hover">
+                <table className="table clients table-striped table-hover">
                     <thead className="thead-dark">
                         <tr>
                             <th scope="col">ID</th>
@@ -93,7 +94,7 @@ const Index = () => {
                     page['content'] && page['content'].length ?
                         renderTableClients()
                         :
-                        <div class="alert alert-warning" role="alert">
+                        <div className="alert alert-warning" role="alert">
                             Nenhum cliente encontrado
                         </div>
                 }

@@ -17,3 +17,8 @@ select option {
 .client.content.container{
     margin-bottom: 100px;
 }
+
+.table.clients input{
+    padding-top: 0;
+    padding-bottom: 0;
+}
