@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import PhoneInput from '../../components/Mask/PhoneInput';
 import api, { CLIENT_LIST_URL } from '../../services/api';
-import InputMask from 'react-input-mask';
 import Header from '../../components/Header/Index'
 import './Client.css';
+import { IMaskInput } from 'react-imask';
 
 const Index = () => {
 
@@ -30,8 +29,8 @@ const Index = () => {
                 <tr key={cli.id}>
                     <th scope="row">{cli.id}</th>
                     <td>{cli.name}</td>
-                    <td><PhoneInput className="form-control-plaintext" value={cli.phone.number} readOnly={true} /></td>
-                    <td><InputMask mask='999.999.999-99' type="text" className="form-control-plaintext" value={cli.document} readOnly /></td>
+                    <td><IMaskInput className="form-control-plaintext" mask={[{ mask: '(00) 0000-0000' }, { mask: '(00) 00000-0000' }]} value={cli.phone.number} readOnly={true} /></td>
+                    <td><IMaskInput mask='000.000.000-00' type="text" className="form-control-plaintext" value={cli.document} readOnly /></td>
                     <td>{cli.email}</td>
                     <td><Link to={`/client/${cli.id}`}>ver</Link></td>
                 </tr>

@@ -1,30 +1,32 @@
 import React, { useState } from 'react';
-import InputMask from 'react-input-mask';
+import { IMaskInput } from 'react-imask';
 import axios from 'axios';
-const CepInput = ({ className, ...props }) => {
-    const [mask, setMask] = useState("99999-999");
+const CepInput = (props) => {
+
+    const [lastSearch, setLastSearch] = useState('');
 
     const search = (cep) => {
-        axios.get('https://viacep.com.br/ws/' + cep + '/json')
-            .then((response) => {
-                props.responsecep(response.data);
-            })
-            .catch(error => console.error(error));
+        if (lastSearch != cep)
+            axios.get('https://viacep.com.br/ws/' + cep + '/json')
+                .then((response) => {
+                    props.responsecep(response.data);
+                    setLastSearch(cep);
+                })
+                .catch(error => console.error(error));
     }
 
     return (
-        <InputMask
+        <IMaskInput
             {...props}
-            mask={mask}
-            onKeyUp={(e, a) => {
+            mask={"00000-000"}
+            onKeyUp={e => {
                 let cep = e.target.value.replace(/\D/g, '');
                 if (cep.length === 8) {
                     search(cep);
                 }
             }}
         >
-            {inputProps => <input {...inputProps} className={className} readOnly={props.readOnly} type="tel" />}
-        </InputMask>
+        </IMaskInput>
     );
 };
 

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import api, { BASE_CLIENT_URL } from '../../services/api';
-import InputMask from 'react-input-mask';
 import './Client.css';
-import PhoneInput from '../../components/Mask/PhoneInput';
 import Swal from 'sweetalert2'
 import Header from '../../components/Header/Index';
 import { getRoles } from '../../services/auth'
 import CepInput from '../../components/CepInput';
+import { IMaskInput } from 'react-imask';
 
 const Client = () => {
     let params = useParams();
@@ -156,7 +155,7 @@ const Client = () => {
             <tr key={index}>
                 <td>
                     <input type="hidden" readOnly value={phone.id} />
-                    <PhoneInput type="tel" required className="form-control" value={phone.number}
+                    <IMaskInput mask={[{ mask: '(00) 0000-0000' }, { mask: '(00) 00000-0000' }]}  type="tel" required className="form-control" value={phone.number}
                         onChange={e => { updatePhones(index, 'number', e.target.value) }}
                     />
                 </td>
@@ -212,7 +211,7 @@ const Client = () => {
                         </div>
                         <div className="form-group col-md-2">
                             <label htmlFor="document">CPF</label>
-                            <InputMask mask='999.999.999-99' required type="tel" className="form-control" id="document" placeholder="CPF" value={currentCli.document}
+                            <IMaskInput mask='000.000.000-00' required type="tel" className="form-control" id="document" placeholder="CPF" value={currentCli.document}
                                 onChange={e => { updateCurrentCli('document', e.target.value) }} />
                         </div>
                     </div>
@@ -221,7 +220,7 @@ const Client = () => {
                         <div className="form-group col-md-2">
                             <label htmlFor="address.cep">CEP</label>
 
-                            <CepInput type="tel"required   className="form-control" id="address.cep" placeholder="CEP"
+                            <CepInput type="tel"required className="form-control" id="address.cep" placeholder="CEP"
                                 responsecep={(r) => {
                                     setCurrentCliAddress('logradouro', r.logradouro);
                                     setCurrentCliAddress('bairro', r.bairro);
@@ -256,7 +255,7 @@ const Client = () => {
                         </div>
                         <div className="form-group col-md-1">
                             <label htmlFor="address.uf">UF</label>
-                            <input type="text" className="form-control" required id="address.uf" placeholder="UF" value={currentCli.address.uf}
+                            <input type="text" className="form-control" required maxLength="2" id="address.uf" placeholder="UF" value={currentCli.address.uf}
                                 onChange={e => { setCurrentCliAddress('uf', e.target.value) }} />
                         </div>
                     </div>
