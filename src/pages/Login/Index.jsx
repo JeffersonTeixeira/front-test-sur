@@ -41,7 +41,7 @@ const Index = () => {
             name: login.username,
             password: login.password
         }
-
+        changeMessage('');
         api.post(AUTH_USER, payload)
             .then(response => {
                 if (response.status === 200) {
@@ -76,7 +76,7 @@ const Index = () => {
                     <div className="form-group text-left">
                         <label htmlFor="password">Senha</label>
                         <input type="password"
-                        className="form-control"
+                            className="form-control"
                             id="password"
                             placeholder="Senha"
                             value={login.senha}
@@ -92,7 +92,7 @@ const Index = () => {
                         className="btn btn-primary"
                         onClick={loginHandle}
                     >Login</button>
-                </form>               
+                </form>
             </div>
         </div>
     );

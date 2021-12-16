@@ -14,7 +14,7 @@ const Header = (props) => {
                     <a className="btn btn-link"
                         onClick={e => {
                             Swal.fire({
-                                title: "Logout?",
+                                title: "Fazer logout?",
                                 text: "Você será redirecionado para página de login",
                                 confirmButtonText: 'Sim, sair',
                                 cancelBtnText: 'Cancelar',

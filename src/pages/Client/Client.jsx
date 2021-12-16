@@ -39,7 +39,25 @@ const Client = () => {
             api.get(BASE_CLIENT_URL + '/' + params.id).then(response => {
                 setClientDataFromApi(response.data);
             }).catch(error => {
-                console.log("error:", error);
+                console.error(error);
+                if (error.response && error.response.data['details']) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',    
+                        html: '<ul>' +
+                            error.response.data.details.map(err => {
+                                return '<li>' + err + '</li>'
+                            })
+                            + '</ul>'
+                    });
+    
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Algo deu errado, tente novamente'
+                    })
+                }
             });
         }
     }
@@ -93,18 +111,40 @@ const Client = () => {
         payload.emails = [...emails].filter(item => item != payload.email);
         payload.phones = [...phones].filter(item => item != payload.phone);
 
-        console.log("payload", payload);
 
         api.post(BASE_CLIENT_URL, payload)
             .then(response => {
-                console.log(response);
+
                 setClientDataFromApi(response.data);
                 Swal.fire(
                     'Salvo!',
                     'Cliente salvo.',
                     'success'
                 );
-            }).catch(error => {
+            }).catch((error, b) => {
+               
+                if (error.response && error.response.data['details']) {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Campo(s) inválido(s)...',
+                        
+                        html: '<ul>' +
+                            error.response.data.details.map(err => {
+                                return '<li>' + err + '</li>'
+                            })
+                            + '</ul>'
+                    });
+
+                } else {                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Algo deu errado!'
+                    })
+                }
+
+
                 console.error(error);
             });
 
@@ -155,7 +195,7 @@ const Client = () => {
             <tr key={index}>
                 <td>
                     <input type="hidden" readOnly value={phone.id} />
-                    <IMaskInput mask={[{ mask: '(00) 0000-0000' }, { mask: '(00) 00000-0000' }]}  type="tel" required className="form-control" value={phone.number}
+                    <IMaskInput mask={[{ mask: '(00) 0000-0000' }, { mask: '(00) 00000-0000' }]} type="tel" required className="form-control" value={phone.number}
                         onChange={e => { updatePhones(index, 'number', e.target.value) }}
                     />
                 </td>
@@ -220,7 +260,7 @@ const Client = () => {
                         <div className="form-group col-md-2">
                             <label htmlFor="address.cep">CEP</label>
 
-                            <CepInput type="tel"required className="form-control" id="address.cep" placeholder="CEP"
+                            <CepInput type="tel" required className="form-control" id="address.cep" placeholder="CEP"
                                 responsecep={(r) => {
                                     setCurrentCliAddress('logradouro', r.logradouro);
                                     setCurrentCliAddress('bairro', r.bairro);
@@ -340,11 +380,26 @@ const Client = () => {
                                                         'success'
                                                     );
                                                 }).catch(error => {
-                                                    Swal.fire({
-                                                        icon: 'error',
-                                                        title: 'Oops...',
-                                                        text: 'Algo deu errado!'
-                                                    })
+                                                    console.error(error);
+                                                    if (error.response && error.response.data['details']) {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Oops...',
+                                        
+                                                            html: '<ul>' +
+                                                                error.response.data.details.map(err => {
+                                                                    return '<li>' + err + '</li>'
+                                                                })
+                                                                + '</ul>'
+                                                        });
+                                        
+                                                    } else {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Oops...',
+                                                            text: 'Algo deu errado, tente novamente'
+                                                        })
+                                                    }
                                                 })
                                             }
                                         });

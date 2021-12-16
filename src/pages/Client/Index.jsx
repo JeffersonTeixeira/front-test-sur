@@ -4,6 +4,7 @@ import api, { CLIENT_LIST_URL } from '../../services/api';
 import Header from '../../components/Header/Index'
 import './Client.css';
 import { IMaskInput } from 'react-imask';
+import Swal from 'sweetalert2'
 
 const Index = () => {
 
@@ -14,7 +15,27 @@ const Index = () => {
             console.log(response.data);
             setPage(response.data);
         }).catch(error => {
-            console.error("error:", error);
+            console.error(error);
+            if (error.response && error.response.data['details']) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+
+                    html: '<ul>' +
+                        error.response.data.details.map(err => {
+                            return '<li>' + err + '</li>'
+                        })
+                        + '</ul>'
+                });
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Algo deu errado, tente novamente'
+                })
+            }
+
         })
     };
 
