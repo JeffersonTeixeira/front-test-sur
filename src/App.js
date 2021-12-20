@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
 	BrowserRouter as Router,
 	Routes,
@@ -11,12 +11,8 @@ import LoginIndex from './pages/Login/Index';
 import RequireAuth from './components/RequireAuth/RequireAuth';
 
 function App() {
-	const [title, setTitle] = useState(null);
-	const [message, setMessage] = useState(null);
-
 	return (
-		<div className="app">
-			{/* add header */}
+		<div className="app">			
 			<Router>
 				<Routes>
 					<Route path="/" element={<RequireAuth><ClientIndex /></RequireAuth>} />

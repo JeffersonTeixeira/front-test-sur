@@ -43,14 +43,14 @@ const Client = () => {
                 if (error.response && error.response.data['details']) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',    
+                        title: 'Oops...',
                         html: '<ul>' +
                             error.response.data.details.map(err => {
                                 return '<li>' + err + '</li>'
-                            })
+                            }).join('')
                             + '</ul>'
                     });
-    
+
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -121,22 +121,40 @@ const Client = () => {
                     'Cliente salvo.',
                     'success'
                 );
-            }).catch((error, b) => {
-               
-                if (error.response && error.response.data['details']) {
-
+            }).catch((error) => {
+                if (error.response && error.response.status === 409) {
+                    Swal.fire({
+                        title: "Dados desatualizados",
+                        confirmButtonText: 'Carregar aqui',
+                        cancelBtnText: 'Cancelar',
+                        showDenyButton: true,
+                        denyButtonText: 'Abrir em nova aba',
+                        showCancelButton: true,
+                        html: '<p><strong>Não foi possível salvar.</strong> Os dados desta página parecem ter sido modificados após ela ser carregada</p>' +
+                            '<strong>O que você pode fazer:</strong>' +
+                            '<ul><li>' +
+                            '<p>Recarregar os dados novos nessa página (os dados do formulário serão perdidos)</p></li>' +
+                            '<li><p>Abrir a versão atualizada em uma nova aba</p></li></ul>'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetchClient();
+                        } else if (result.isDenied) {
+                            window.open(window.location.href, "_blank")?.focus();
+                        }
+                    });
+                } else if (error.response && error.response.data['details']) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Campo(s) inválido(s)...',
-                        
+
                         html: '<ul>' +
                             error.response.data.details.map(err => {
                                 return '<li>' + err + '</li>'
-                            })
+                            }).join('')
                             + '</ul>'
                     });
 
-                } else {                    
+                } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
@@ -385,14 +403,14 @@ const Client = () => {
                                                         Swal.fire({
                                                             icon: 'error',
                                                             title: 'Oops...',
-                                        
+
                                                             html: '<ul>' +
                                                                 error.response.data.details.map(err => {
                                                                     return '<li>' + err + '</li>'
-                                                                })
+                                                                }).join('')
                                                                 + '</ul>'
                                                         });
-                                        
+
                                                     } else {
                                                         Swal.fire({
                                                             icon: 'error',

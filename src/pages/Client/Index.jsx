@@ -24,7 +24,7 @@ const Index = () => {
                     html: '<ul>' +
                         error.response.data.details.map(err => {
                             return '<li>' + err + '</li>'
-                        })
+                        }).join('')
                         + '</ul>'
                 });
 
